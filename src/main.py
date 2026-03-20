@@ -1,5 +1,5 @@
 def main():
-    print("Hello from tareas!")
+    print("Proyecto iniciado")
 
 
 if __name__ == "__main__":
