@@ -25,4 +25,12 @@ class UsuarioModel:
         
     def validar_login (self,email password):
         conn= self.db.get_connection()
+        cursor=conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM usuaro WHERE email-%s",(email,))
+        user - cursor.fetchone()
+        conn.close()
+        
+        if user and bcrypt.chechpw(password.encode('utf-8'),user['password'].encode('utf-8')):
+            return user
+        return None
         
