@@ -2,7 +2,7 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import date,time
 
-class UsuariosSchema(BaseModel):
+class UsuarioSchema(BaseModel):
     nombre: str=Field(min_length=3, mas_length=100)
     email: EmailStr
     password: str = Field (min_length=8)
