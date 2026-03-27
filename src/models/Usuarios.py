@@ -13,7 +13,7 @@ class UsuarioModel:
         cursor=conn.cursor()
         try:
             cursor.execute(
-                "INSERT INTO usuario (nombre,email,password) VALUES (%s , %s , %s)",
+                "INSERT INTO usuarios (nombre,email,password) VALUES (%s , %s , %s)",
                 (usuario_data.nombre, usuario_data.email, hashed_pw.decode('utf-8'))
             )
             conn.commit()
@@ -27,7 +27,7 @@ class UsuarioModel:
     def validar_login(self,email,password):
         conn= self.db.get_connection()
         cursor=conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM usuaro WHERE email=%s",(email,))
+        cursor.execute("SELECT * FROM usuarios WHERE email=%s",(email,))
         user = cursor.fetchone()
         conn.close()
         

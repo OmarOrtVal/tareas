@@ -1,6 +1,6 @@
-from src.models.TareaModel import TareaModel 
+from src.models.TareasModel import TareaModel 
 
-class TareasController:
+class TareaController:
     def __init__(self):
         self.model=TareaModel()
     
@@ -11,5 +11,5 @@ class TareasController:
         if not titulo:
             return False,"El titulo es obligatorio"
         
-        self.mode.crear(id_usuario,titulo,desc,prio,clas)
+        self.model.crear(id_usuario,titulo,desc,prio,clas)
         return True, "Tarea guardada"
