@@ -1,4 +1,4 @@
-from .database import Database
+from .databaseModel import Database
 
 class TareaModel:
     def __init__(self):
@@ -16,7 +16,7 @@ class TareaModel:
     def crear(self,id_usuario,titulo,descripcion,prioridad,clasificacion):
         conn=self.db.get_connection()
         cursor=conn.cursor()
-        query= """"INSERT INTO tareas(id_usuario,titulo,descripcion,prioridad,clasificacion)
+        query= """INSERT INTO tareas(id_usuario,titulo,descripcion,prioridad,clasificacion)
                 VALUES(%s , %s , %s , %s , %s)"""
         cursor.execute(query,(id_usuario,titulo,descripcion,prioridad,clasificacion))
         conn.commit()

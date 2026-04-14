@@ -1,4 +1,4 @@
-from src.models.UserModel import UsuarioModel 
+from src.models.UsuariosModel import UsuarioModel 
 from src.models.schemasModel import UsuarioSchema
 from pydantic import ValidationError
 
