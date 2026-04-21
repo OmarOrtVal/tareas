@@ -1,48 +1,96 @@
 import flet as ft
 
-def LoginView(page: ft.Page, auth_controller):
-    email_input = ft.TextField(
+def LoginView(page: ft.Page, auth_controller=None):
+    usuario_valido = "admin@gmail.com"
+    password_valido = "1234"
+    
+    correo = ft.TextField(
         label="Correo electrónico",
-        width=350,
+        prefix_icon=ft.Icons.PERSON,
+        width=400,
         border_radius=10,
         keyboard_type=ft.KeyboardType.EMAIL
     )
 
-    pass_input = ft.TextField(
+    contraseña = ft.TextField(
         label="Contraseña",
+        prefix_icon=ft.Icons.KEY,
         password=True,
         can_reveal_password=True,
-        width=350,
+        width=400,
         border_radius=10
     )
+    
+    mensaje = ft.Text("", color="red")
+
+    def mostrar_snackbar(mensaje_texto, color=ft.Colors.GREEN):
+        """Función auxiliar para mostrar notificaciones"""
+        page.snack_bar = ft.SnackBar(
+            content=ft.Text(mensaje_texto),
+            bgcolor=color,
+            duration=2000,
+        )
+        page.snack_bar.open = True
+        page.update()
 
     def login_click(e):
-        if not email_input.value or not pass_input.value:
-            page.snack_bar = ft.SnackBar(ft.Text("Por favor, llene todos los campos"))
-            page.snack_bar.open = True
+        if not correo.value or not contraseña.value:
+            mensaje.value = "Por favor, llene todos los campos"
+            mensaje.color = "red"
             page.update()
             return
-
-        user, msg = auth_controller.login(email_input.value, pass_input.value)
-
-        if user:
-            page.session.set("user", user)
-            page.go("/dashboard")
+        
+        if auth_controller:
+            user, msg = auth_controller.login(correo.value, contraseña.value)
+            if user:
+                page.session.set("user", user)
+                mostrar_snackbar("¡Sesión iniciada correctamente!", ft.Colors.GREEN)
+                page.go("/dashboard")
+            else:
+                mensaje.value = msg
+                mensaje.color = "red"
+                page.update()
         else:
-            page.snack_bar = ft.SnackBar(ft.Text(msg))
-            page.snack_bar.open = True
-            page.update()
+            if correo.value == usuario_valido and contraseña.value == password_valido:
+                page.session.set("user", {"email": correo.value, "name": "Administrador"})
+                mostrar_snackbar("¡Sesión iniciada correctamente!", ft.Colors.GREEN)
+                page.go("/dashboard")
+            else:
+                mensaje.value = "Correo o contraseña incorrectos"
+                mensaje.color = "red"
+                page.update()
 
-    login_button = ft.ElevatedButton(
-        "Entrar",
+    def go_to_registro(e):
+        page.go("/registro")
+
+    def go_to_forgot_password(e):
+        page.go("/recuperar")
+
+    iniciar_sesion = ft.ElevatedButton(
+        "Iniciar sesión",
+        width=250,
         on_click=login_click,
-        width=350,
-        bgcolor="blue",
-        color="white"
+        style=ft.ButtonStyle(
+            bgcolor=ft.Colors.GREEN_400,
+            color=ft.Colors.WHITE,
+            padding=20,
+            shape=ft.RoundedRectangleBorder(radius=12),
+        ),
     )
 
-    # Opcional: permitir enviar con Enter en el campo contraseña
-    pass_input.on_submit = login_click
+    registro = ft.ElevatedButton(
+        "Registrarme",
+        width=200,
+        on_click=go_to_registro,
+        style=ft.ButtonStyle(
+            bgcolor=ft.Colors.BLUE_600,
+            color=ft.Colors.WHITE,
+            padding=20,
+            shape=ft.RoundedRectangleBorder(radius=12),
+        ),
+    )
+    
+    contraseña.on_submit = login_click
 
     return ft.View(
         route="/",
@@ -50,24 +98,32 @@ def LoginView(page: ft.Page, auth_controller):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         appbar=ft.AppBar(
             title=ft.Text("SIGE - Login"),
-            bgcolor="bluegrey900",
-            color="white"
+            bgcolor=ft.Colors.BLACK,
+            color=ft.Colors.WHITE
         ),
         controls=[
             ft.Column(
                 [
                     ft.Text("Acceso al Sistema", size=24, weight="bold"),
-                    email_input,
-                    pass_input,
-                    login_button,
+                    ft.Container(height=10),
+                    correo,
+                    ft.Container(height=10),
+                    contraseña,
+                    ft.Container(height=10),
+                    mensaje,
+                    ft.Container(height=10),
                     ft.TextButton(
-                        "Crear una cuenta nueva",
-                        on_click=lambda _: page.go("/registro")
+                        "¿Olvidaste tu contraseña?",
+                        on_click=go_to_forgot_password
+                    ),
+                    ft.Row(
+                        [iniciar_sesion, registro],
+                        alignment=ft.MainAxisAlignment.CENTER
                     )
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 tight=True,
-                spacing=20
+                spacing=15
             )
         ]
     )
