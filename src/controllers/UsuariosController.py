@@ -4,12 +4,21 @@ from pydantic import ValidationError
 
 class AuthController:
     def __init__(self):
-        self.model = UsuarioModel()
+        # Tu código de inicialización aquí
+        pass
+    
+    def login(self, email, password):
+        """Método para autenticar usuario"""
+        # Aquí va tu lógica de autenticación
+        # Por ejemplo, validación simple o consulta a base de datos
         
-    def registrar_usuario(self, nombre, email, password):
-        try:
-            nuevo_usuario=UsuarioSchema(nombre=nombre, email=email,password=password)
-            success=self.model.registrar(nuevo_usuario)
-            return success, "Usuario creado correctamente"
-        except ValidationError as e:
-            return False, e.errors()[0]['msg']
+        # Ejemplo con validación simple:
+        if email == "admin@gmail.com" and password == "1234":
+            user = {
+                "email": email,
+                "name": "Administrador",
+                "role": "admin"
+            }
+            return user, "Login exitoso"
+        else:
+            return None, "Correo o contraseña incorrectos"

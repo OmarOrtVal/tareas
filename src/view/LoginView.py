@@ -51,7 +51,7 @@ def LoginView(page: ft.Page, auth_controller=None):
                 page.update()
         else:
             if correo.value == usuario_valido and contraseña.value == password_valido:
-                page.session.set("user", {"email": correo.value, "name": "Administrador"})
+                page.session.set_data("user", {"email": correo.value, "name": "Administrador"})
                 mostrar_snackbar("¡Sesión iniciada correctamente!", ft.Colors.GREEN)
                 page.go("/dashboard")
             else:
