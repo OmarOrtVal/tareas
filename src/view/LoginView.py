@@ -24,7 +24,6 @@ def LoginView(page: ft.Page, auth_controller=None):
     mensaje = ft.Text("", color="red")
 
     def mostrar_snackbar(mensaje_texto, color=ft.Colors.GREEN):
-        """Función auxiliar para mostrar notificaciones"""
         page.snack_bar = ft.SnackBar(
             content=ft.Text(mensaje_texto),
             bgcolor=color,
