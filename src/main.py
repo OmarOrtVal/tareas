@@ -1,8 +1,8 @@
 import flet as ft
-from controllers.UsuariosController import AuthController 
+from controllers.UsuariosController import AuthController
 from controllers.TareaController import TareaController
 from view.LoginView import LoginView
-from view.DashboardView import DashboardView  
+from view.DashboardView import DashboardView   
 
 def start(page: ft.Page):
     page.title="Sistema SIGE"
@@ -35,7 +35,6 @@ def start(page: ft.Page):
             
     page.on_route_change=route_change
     page.on_view_pop=view_pop
-    
 
     if page.route == "/":
         route_change(None)

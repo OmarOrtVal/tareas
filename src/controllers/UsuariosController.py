@@ -1,24 +1,25 @@
-from models.UsuariosModel import UsuarioModel 
-from models.schemasModel import UsuarioSchema
-from pydantic import ValidationError
+from models.UsuariosModel import UsuarioModel
+
 
 class AuthController:
     def __init__(self):
-        # Tu código de inicialización aquí
-        pass
-    
+        self.usuario_model = UsuarioModel()
+
     def login(self, email, password):
-        """Método para autenticar usuario"""
-        # Aquí va tu lógica de autenticación
-        # Por ejemplo, validación simple o consulta a base de datos
-        
-        # Ejemplo con validación simple:
-        if email == "admin@gmail.com" and password == "1234":
+        try:
+            user_db = self.usuario_model.validar_login(email, password)
+
+            if not user_db:
+                return None, "Correo o contraseña incorrectos"
+
             user = {
-                "email": email,
-                "name": "Administrador",
-                "role": "admin"
+                "id_usuario": user_db["id_usuario"],
+                "nombre": user_db["nombre"],
+                "apellido": user_db["apellido"],
+                "email": user_db["email"]
             }
+
             return user, "Login exitoso"
-        else:
-            return None, "Correo o contraseña incorrectos"
+
+        except Exception as e:
+            return None, f"Error en login: {str(e)}"

@@ -42,7 +42,7 @@ def LoginView(page: ft.Page, auth_controller=None):
         if auth_controller:
             user, msg = auth_controller.login(correo.value, contraseña.value)
             if user:
-                page.session.set("user", user)
+                page.user_data = user
                 mostrar_snackbar("¡Sesión iniciada correctamente!", ft.Colors.GREEN)
                 page.go("/dashboard")
             else:
@@ -51,7 +51,11 @@ def LoginView(page: ft.Page, auth_controller=None):
                 page.update()
         else:
             if correo.value == usuario_valido and contraseña.value == password_valido:
-                page.session.set_data("user", {"email": correo.value, "name": "Administrador"})
+                page.user_data = {
+                    "email": correo.value,
+                    "nombre": "Administrador",
+                    "id_usuario": 1
+                }
                 mostrar_snackbar("¡Sesión iniciada correctamente!", ft.Colors.GREEN)
                 page.go("/dashboard")
             else:
@@ -59,30 +63,12 @@ def LoginView(page: ft.Page, auth_controller=None):
                 mensaje.color = "red"
                 page.update()
 
-    def go_to_registro(e):
-        page.go("/registro")
-
-    def go_to_forgot_password(e):
-        page.go("/recuperar")
-
     iniciar_sesion = ft.ElevatedButton(
         "Iniciar sesión",
         width=250,
         on_click=login_click,
         style=ft.ButtonStyle(
-            bgcolor=ft.Colors.GREEN_400,
-            color=ft.Colors.WHITE,
-            padding=20,
-            shape=ft.RoundedRectangleBorder(radius=12),
-        ),
-    )
-
-    registro = ft.ElevatedButton(
-        "Registrarme",
-        width=200,
-        on_click=go_to_registro,
-        style=ft.ButtonStyle(
-            bgcolor=ft.Colors.BLUE_600,
+            bgcolor=ft.Colors.BLUE_500,
             color=ft.Colors.WHITE,
             padding=20,
             shape=ft.RoundedRectangleBorder(radius=12),
@@ -111,12 +97,8 @@ def LoginView(page: ft.Page, auth_controller=None):
                     ft.Container(height=10),
                     mensaje,
                     ft.Container(height=10),
-                    ft.TextButton(
-                        "¿Olvidaste tu contraseña?",
-                        on_click=go_to_forgot_password
-                    ),
                     ft.Row(
-                        [iniciar_sesion, registro],
+                        [iniciar_sesion],
                         alignment=ft.MainAxisAlignment.CENTER
                     )
                 ],
