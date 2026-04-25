@@ -9,7 +9,6 @@ def start(page: ft.Page):
     page.window_width= 450
     page.window_height= 700
     auth_ctrl = AuthController()
-    task_ctrl = TareaController()
 
     def route_change(e):
         page.views.clear()
@@ -18,7 +17,7 @@ def start(page: ft.Page):
             page.views.append(LoginView(page, auth_ctrl))
             
         elif page.route == "/dashboard":
-            page.views.append(DashboardView(page, task_ctrl))
+            page.views.append(DashboardView(page))
         
         if not page.views:
             page.views.append(

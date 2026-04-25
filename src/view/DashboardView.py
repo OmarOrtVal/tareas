@@ -1,7 +1,7 @@
 import flet as ft
 
 
-def DashboardView(page, tarea_controller):
+def DashboardView(page):
 
     user = getattr(page, "user_data", None)
 
@@ -15,7 +15,6 @@ def DashboardView(page, tarea_controller):
                 [
                     ft.Text(f"ID: {user.get('id_usuario', '')}"),
                     ft.Text(f"Nombre: {user.get('nombre', '')}"),
-                    ft.Text(f"Apellido: {user.get('apellido', '')}"),
                     ft.Text(f"Email: {user.get('email', '')}"),
                 ],
                 tight=True

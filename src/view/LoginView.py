@@ -1,8 +1,6 @@
 import flet as ft
 
-def LoginView(page: ft.Page, auth_controller=None):
-    usuario_valido = "admin@gmail.com"
-    password_valido = "1234"
+def LoginView(page: ft.Page, auth_controller):
     
     correo = ft.TextField(
         label="Correo electrónico",
@@ -39,29 +37,15 @@ def LoginView(page: ft.Page, auth_controller=None):
             page.update()
             return
         
-        if auth_controller:
-            user, msg = auth_controller.login(correo.value, contraseña.value)
-            if user:
-                page.user_data = user
-                mostrar_snackbar("¡Sesión iniciada correctamente!", ft.Colors.GREEN)
-                page.go("/dashboard")
-            else:
-                mensaje.value = msg
-                mensaje.color = "red"
-                page.update()
+        user, msg = auth_controller.login(correo.value, contraseña.value)
+        if user:
+            page.user_data = user
+            mostrar_snackbar("¡Sesión iniciada correctamente!", ft.Colors.GREEN)
+            page.go("/dashboard")
         else:
-            if correo.value == usuario_valido and contraseña.value == password_valido:
-                page.user_data = {
-                    "email": correo.value,
-                    "nombre": "Administrador",
-                    "id_usuario": 1
-                }
-                mostrar_snackbar("¡Sesión iniciada correctamente!", ft.Colors.GREEN)
-                page.go("/dashboard")
-            else:
-                mensaje.value = "Correo o contraseña incorrectos"
-                mensaje.color = "red"
-                page.update()
+            mensaje.value = msg
+            mensaje.color = "red"
+            page.update()
 
     iniciar_sesion = ft.ElevatedButton(
         "Iniciar sesión",
