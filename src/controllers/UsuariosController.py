@@ -22,3 +22,17 @@ class AuthController:
 
         except Exception as e:
             return None, f"Error en login: {str(e)}"
+    
+    def registrar(self, usuario_data):
+        try:
+            if self.usuario_model.email_existe(usuario_data.email):
+                return False, "El correo electrónico ya está registrado"
+            exito = self.usuario_model.registrar(usuario_data)
+            
+            if exito:
+                return True, "Usuario registrado exitosamente"
+            else:
+                return False, "Error al registrar usuario"
+                
+        except Exception as e:
+            return False, f"Error en registro: {str(e)}"

@@ -59,6 +59,11 @@ def LoginView(page: ft.Page, auth_controller):
         ),
     )
     
+    btn_registro = ft.TextButton(
+        "¿No tienes cuenta? Regístrate",
+        on_click=lambda _: page.go("/register")
+    )
+    
     contraseña.on_submit = login_click
 
     return ft.View(
@@ -84,7 +89,9 @@ def LoginView(page: ft.Page, auth_controller):
                     ft.Row(
                         [iniciar_sesion],
                         alignment=ft.MainAxisAlignment.CENTER
-                    )
+                    ),
+                    ft.Container(height=10),
+                    btn_registro
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 tight=True,

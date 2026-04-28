@@ -2,6 +2,7 @@ import flet as ft
 from controllers.UsuariosController import AuthController
 from controllers.TareaController import TareaController
 from view.LoginView import LoginView
+from view.RegisterView import RegisterView  
 from view.DashboardView import DashboardView   
 
 def start(page: ft.Page):
@@ -15,7 +16,8 @@ def start(page: ft.Page):
 
         if page.route == "/":
             page.views.append(LoginView(page, auth_ctrl))
-            
+        elif page.route == "/register":  # NUEVA RUTA
+            page.views.append(RegisterView(page, auth_ctrl))
         elif page.route == "/dashboard":
             page.views.append(DashboardView(page))
         
