@@ -21,8 +21,8 @@ class UsuarioModel:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "INSERT INTO usuarios (nombre, email, password) VALUES (%s, %s, %s)",
-                (usuario_data.nombre, usuario_data.email, hashed_pw.decode('utf-8'))
+                "INSERT INTO usuarios (nombre, apellido, email, password) VALUES (%s, %s, %s, %s)",
+                (usuario_data.nombre, usuario_data.apellido, usuario_data.email, hashed_pw.decode('utf-8'))
             )
             conn.commit()
             return True

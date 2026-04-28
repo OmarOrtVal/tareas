@@ -5,7 +5,14 @@ from models.schemasModel import UsuarioSchema
 def RegisterView(page: ft.Page, auth_controller):
     
     nombre = ft.TextField(
-        label="Nombre completo",
+        label="Nombre(s)",
+        prefix_icon=ft.Icons.PERSON,
+        width=400,
+        border_radius=10
+    )
+    
+    apellido = ft.TextField(
+        label="Apellidos",
         prefix_icon=ft.Icons.PERSON,
         width=400,
         border_radius=10
@@ -75,6 +82,7 @@ def RegisterView(page: ft.Page, auth_controller):
         
         usuario_data = UsuarioSchema(
             nombre=nombre.value,
+            apellido=apellido.value,
             email=email.value,
             password=password.value
         )
@@ -131,6 +139,7 @@ def RegisterView(page: ft.Page, auth_controller):
                     ft.Text("Crear Nueva Cuenta", size=24, weight="bold"),
                     ft.Container(height=10),
                     nombre,
+                    apellido,
                     email,
                     password,
                     confirm_password,

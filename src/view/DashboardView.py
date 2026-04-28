@@ -15,6 +15,7 @@ def DashboardView(page):
                 [
                     ft.Text(f"ID: {user.get('id_usuario', '')}"),
                     ft.Text(f"Nombre: {user.get('nombre', '')}"),
+                    ft.Text(f"Apellido: {user.get('apellido', '')}"),
                     ft.Text(f"Email: {user.get('email', '')}"),
                 ],
                 tight=True

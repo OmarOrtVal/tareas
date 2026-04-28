@@ -15,6 +15,7 @@ class AuthController:
             user = {
                 "id_usuario": user_db["id_usuario"],
                 "nombre": user_db["nombre"],
+                "apellido": user_db["apellido"],
                 "email": user_db["email"]
             }
 
