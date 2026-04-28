@@ -16,7 +16,7 @@ def start(page: ft.Page):
 
         if page.route == "/":
             page.views.append(LoginView(page, auth_ctrl))
-        elif page.route == "/register":  # NUEVA RUTA
+        elif page.route == "/register": 
             page.views.append(RegisterView(page, auth_ctrl))
         elif page.route == "/dashboard":
             page.views.append(DashboardView(page))

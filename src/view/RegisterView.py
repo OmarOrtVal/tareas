@@ -83,7 +83,6 @@ def RegisterView(page: ft.Page, auth_controller):
         
         if exito:
             mostrar_snackbar("¡Registro exitoso! Ahora inicia sesión", ft.Colors.GREEN)
-            # Limpiar campos
             nombre.value = ""
             email.value = ""
             password.value = ""
