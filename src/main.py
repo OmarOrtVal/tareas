@@ -8,8 +8,6 @@ from view.UsuarioView import UserView
 
 def start(page: ft.Page):
     page.title = "Sistema SIGE"
-    page.window_width = 450
-    page.window_height = 700
     auth_ctrl = AuthController()
     tarea_ctrl = TareaController()
 

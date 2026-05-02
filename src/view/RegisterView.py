@@ -136,7 +136,7 @@ def RegisterView(page: ft.Page, auth_controller):
         controls=[
             ft.Column(
                 [
-                    ft.Text("Crear Nueva Cuenta", size=24, weight="bold"),
+                    ft.Text("Crear Nueva Cuenta", size=20, weight="bold"),
                     ft.Container(height=10),
                     nombre,
                     apellido,
@@ -144,14 +144,14 @@ def RegisterView(page: ft.Page, auth_controller):
                     password,
                     confirm_password,
                     mensaje,
-                    ft.Container(height=10),
+                    ft.Container(height=5),
                     btn_registrar,
-                    ft.Container(height=10),
+                    ft.Container(height=5),
                     btn_login
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 tight=True,
-                spacing=15
+                spacing=10
             )
         ]
     )

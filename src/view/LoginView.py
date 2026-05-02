@@ -95,7 +95,7 @@ def LoginView(page: ft.Page, auth_controller):
                 ],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 tight=True,
-                spacing=15
+                spacing=10
             )
         ]
     )

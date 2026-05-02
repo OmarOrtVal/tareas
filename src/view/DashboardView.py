@@ -25,15 +25,9 @@ def DashboardView(page, tarea_controller):
                         content=ft.Container(
                             content=ft.ListTile(
                                 title=ft.Text(t['titulo'], weight="bold"),
-                                subtitle=ft.Text(f"{t.get('descripcion', '')}\nPrioridad: {t.get('prioridad', 'media')}"),
+                                subtitle=ft.Text(f"{t.get('descripcion', '')}\nPrioridad: {t.get('prioridad', 'media')}\nCategoría: {t.get('clasificacion', 'personal')}\nEstado: {t.get('estado', 'pendiente')}"),
                                 trailing=ft.Row(
                                     [
-                                        ft.Container(
-                                            content=ft.Text(t.get('estado', 'pendiente')),
-                                            bgcolor="orange",
-                                            padding=5,
-                                            border_radius=5
-                                        ),
                                         ft.IconButton(
                                             icon=ft.Icons.DELETE,
                                             icon_color="red",
@@ -74,7 +68,9 @@ def DashboardView(page, tarea_controller):
         value="pendiente",
         content=ft.Row([
             ft.Radio(value="pendiente", label="Pendiente"),
+            ft.Radio(value="en_progreso", label="En Progreso"),
             ft.Radio(value="completada", label="Completada"),
+            ft.Radio(value="cancelada", label="Cancelada"),
         ])
     )
     
