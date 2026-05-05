@@ -1,4 +1,3 @@
-# models/TareasModel.py
 from .databaseModel import Database
 
 class TareaModel:

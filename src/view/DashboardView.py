@@ -93,6 +93,20 @@ def DashboardView(page, tarea_controller):
                 txt_descripcion.value = ""
                 cargar_tareas()
                 page.update()
+                
+    def formatear_fecha(fecha):
+        print(f"DEBUG - Fecha recibida: {fecha}")  
+        print(f"DEBUG - Tipo: {type(fecha)}")      
+        if not fecha:
+            return "No disponible"
+    
+        if isinstance(fecha, str) and ' ' in fecha:
+            fecha_parte = fecha.split(' ')[0]  
+            hora_parte = fecha.split(' ')[1]  
+            año, mes, dia = fecha_parte.split('-')
+            return f"{dia}/{mes}/{año} {hora_parte}"
+    
+        return str(fecha)
     
     def mostrar_perfil(e):
         if not user:
@@ -105,12 +119,13 @@ def DashboardView(page, tarea_controller):
                 ft.Text(f"Nombre: {user.get('nombre', '')}"),
                 ft.Text(f"Apellido: {user.get('apellido', '')}"),
                 ft.Text(f"Email: {user.get('email', '')}"),
+                ft.Text(f"Fecha de registro: {formatear_fecha(user.get('fecha_registro'))}"),  
             ], tight=True)
         )
         page.overlay.append(dialogo)
         dialogo.open = True
         page.update()
-    
+        
     cargar_tareas()
     
     return ft.View(
