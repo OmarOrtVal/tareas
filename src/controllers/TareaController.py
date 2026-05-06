@@ -1,4 +1,3 @@
-# controllers/TareaController.py
 from models.TareasModel import TareaModel
 
 class TareaController:

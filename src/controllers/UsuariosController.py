@@ -1,6 +1,5 @@
 from models.UsuariosModel import UsuarioModel
 
-
 class AuthController:
     def __init__(self):
         self.usuario_model = UsuarioModel()
@@ -12,15 +11,21 @@ class AuthController:
             if not user_db:
                 return None, "Correo o contraseña incorrectos"
 
+            self.usuario_model.actualizar_ultimo_acceso(user_db["id_usuario"])
+        
+            user_db_actualizado = self.usuario_model.obtener_por_id(user_db["id_usuario"])
+
             user = {
-                "id_usuario": user_db["id_usuario"],
-                "nombre": user_db["nombre"],
-                "apellido": user_db["apellido"],
-                "email": user_db["email"],
-            }
+                "id_usuario": user_db_actualizado["id_usuario"],
+                "nombre": user_db_actualizado["nombre"],
+                "apellido": user_db_actualizado["apellido"],
+                "email": user_db_actualizado["email"],
+                "fecha_registro": user_db_actualizado["fecha_registro"],
+                "ultimo_acceso": user_db_actualizado["ultimo_acceso"],  
+        }
 
             return user, "Login exitoso"
-
+        
         except Exception as e:
             return None, f"Error en login: {str(e)}"
     
