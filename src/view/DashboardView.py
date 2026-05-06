@@ -120,6 +120,7 @@ def DashboardView(page, tarea_controller):
                 ft.Text(f"Apellido: {user.get('apellido', '')}"),
                 ft.Text(f"Email: {user.get('email', '')}"),
                 ft.Text(f"Fecha de registro: {formatear_fecha(user.get('fecha_registro'))}"),  
+                ft.Text(f"Último acceso: {formatear_fecha(user.get('ultimo_acceso'))}"),
             ], tight=True)
         )
         page.overlay.append(dialogo)
