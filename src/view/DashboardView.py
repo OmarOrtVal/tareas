@@ -76,12 +76,19 @@ def DashboardView(page, tarea_controller):
                 hora_limite_val = t.get('hora_limite', '') 
                 hora_texto = f" | Hora: {hora_limite_val}" if hora_limite_val else ""
                 
+                fecha_creacion = t.get('fecha_creacion_formateada', t.get('fecha_creacion', ''))
+                fecha_creacion_texto = f"\nCreada: {formatear_fecha_creacion(fecha_creacion)}" if fecha_creacion else ""
+                
                 lista_tareas.controls.append(
                     ft.Card(
                         content=ft.Container(
                             content=ft.ListTile(
                                 title=ft.Text(t['titulo'], weight="bold"),
-                                subtitle=ft.Text(f"{t.get('descripcion', '')}\nPrioridad: {t.get('prioridad', 'media')}\nCategoría: {t.get('clasificacion', 'personal')}\nEstado: {t.get('estado', 'pendiente')}{fecha_texto}{hora_texto}"),
+                                subtitle=ft.Text(f"{t.get('descripcion', '')}\n"
+                                            f"Prioridad: {t.get('prioridad', 'media')}\n"
+                                            f"Categoría: {t.get('clasificacion', 'personal')}\n"
+                                            f"Estado: {t.get('estado', 'pendiente')}"
+                                            f"{fecha_texto}{hora_texto}{fecha_creacion_texto}"),
                                 trailing=ft.Row(
                                     [
                                         ft.IconButton(
@@ -121,6 +128,9 @@ def DashboardView(page, tarea_controller):
             ft.dropdown.Option("personal", "Personal"),
             ft.dropdown.Option("trabajo", "Trabajo"),
             ft.dropdown.Option("estudio", "Estudio"),
+            ft.dropdown.Option("hogar", "Hogar"),      
+            ft.dropdown.Option("salud", "Salud"),      
+            ft.dropdown.Option("otro", "Otro"),        
         ]
     )
     
@@ -207,19 +217,48 @@ def DashboardView(page, tarea_controller):
             return str(fecha)
         return str(fecha)
     
+    def formatear_fecha_creacion(fecha):
+        if not fecha:
+            return "Fecha no disponible"
+        try:
+            if isinstance(fecha, str):
+                if ' ' in fecha:
+                    fecha_parte = fecha.split(' ')[0]
+                    hora_parte = fecha.split(' ')[1][:5]
+                    año, mes, dia = fecha_parte.split('-')
+                    return f"{dia}/{mes}/{año} {hora_parte}"
+                else:
+                    año, mes, dia = fecha.split('-')
+                    return f"{dia}/{mes}/{año}"
+        except:
+            return str(fecha)
+        return str(fecha)
+    
     def mostrar_perfil(e):
         if not user:
             return
+        
+        foto_widget = ft.CircleAvatar(
+            radius=50,
+            bgcolor=ft.Colors.BLUE_100
+        )
+        
+        if user.get('foto_perfil'):
+            foto_widget.foreground_image_src_base64 = user['foto_perfil']
+        else:
+            foto_widget.content = ft.Icon(ft.Icons.PERSON, size=50)
+        
         dialogo = ft.AlertDialog(
             title=ft.Text("Perfil"),
             content=ft.Column([
+                foto_widget,
                 ft.Text(f"ID: {user.get('id_usuario', '')}"),
                 ft.Text(f"Nombre: {user.get('nombre', '')}"),
                 ft.Text(f"Apellido: {user.get('apellido', '')}"),
                 ft.Text(f"Email: {user.get('email', '')}"),
                 ft.Text(f"Fecha de registro: {formatear_fecha(user.get('fecha_registro'))}"),  
                 ft.Text(f"Último acceso: {formatear_fecha(user.get('ultimo_acceso'))}"),
-            ], tight=True)
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, tight=True, spacing=10)
         )
         page.overlay.append(dialogo)
         dialogo.open = True

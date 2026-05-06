@@ -1,5 +1,6 @@
 import bcrypt
 from .databaseModel import Database
+import base64
 
 class UsuarioModel:
     def __init__(self):
@@ -21,8 +22,11 @@ class UsuarioModel:
         cursor = conn.cursor()
         try:
             cursor.execute(
-                "INSERT INTO usuarios (nombre, apellido, email, password) VALUES (%s, %s, %s, %s)",
-                (usuario_data.nombre, usuario_data.apellido, usuario_data.email, hashed_pw.decode('utf-8'))
+                """INSERT INTO usuarios (nombre, apellido, email, password, foto_perfil) 
+                VALUES (%s, %s, %s, %s, %s)""",
+                (usuario_data.nombre, usuario_data.apellido, 
+                usuario_data.email, hashed_pw.decode('utf-8'), 
+                usuario_data.foto_perfil)
             )
             conn.commit()
             return True
@@ -60,3 +64,19 @@ class UsuarioModel:
         user = cursor.fetchone()
         conn.close()
         return user
+    
+    def actualizar_foto_perfil(self, id_usuario, foto_data):
+        conn = self.db.get_connection()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                "UPDATE usuarios SET foto_perfil = %s WHERE id_usuario = %s",
+                (foto_data, id_usuario)
+            )
+            conn.commit()
+            return True
+        except Exception as e:
+            print(f"Error: {e}")
+            return False
+        finally:
+            conn.close()

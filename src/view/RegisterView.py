@@ -1,6 +1,9 @@
 import flet as ft
 import re
 from models.schemasModel import UsuarioSchema  
+import shutil
+import os
+from datetime import datetime
 
 def RegisterView(page: ft.Page, auth_controller):
     
@@ -44,6 +47,55 @@ def RegisterView(page: ft.Page, auth_controller):
         border_radius=10
     )
     
+    foto_perfil = ft.CircleAvatar(
+        content=ft.Icon(ft.Icons.PERSON, size=40),
+        radius=40,
+        bgcolor=ft.Colors.BLUE_100
+    )
+    
+    selected_image_path = None
+    
+    def pick_image(e):
+        file_picker.pick_files(
+            allowed_extensions=["jpg", "jpeg", "png", "gif", "bmp"],
+            dialog_title="Seleccionar foto de perfil"
+        )
+    
+    def on_file_selected(e: ft.FilePickerResultEvent):
+        nonlocal selected_image_path
+        if e.files:
+            try:
+                selected_image_path = e.files[0].path
+                
+                foto_perfil.content = ft.Image(
+                    src=selected_image_path,
+                    width=80,
+                    height=80,
+                    fit=ft.ImageFit.COVER
+                )
+                foto_perfil.update()
+                
+                print(f"Foto seleccionada: {selected_image_path}")
+                
+            except Exception as ex:
+                print(f"Error al cargar imagen: {ex}")
+                page.snack_bar = ft.SnackBar(
+                    content=ft.Text(f"Error al cargar imagen: {ex}"),
+                    bgcolor="red"
+                )
+                page.snack_bar.open = True
+                page.update()
+    
+    file_picker = ft.FilePicker(on_result=on_file_selected)
+    page.overlay.append(file_picker)
+    
+    btn_select_photo = ft.ElevatedButton(
+        "Seleccionar foto de perfil",
+        icon=ft.Icons.PHOTO_CAMERA,
+        on_click=pick_image,
+        width=250
+    )
+    
     mensaje = ft.Text("", color="red", size=12)
     
     def mostrar_snackbar(mensaje_texto, color=ft.Colors.GREEN):
@@ -56,7 +108,8 @@ def RegisterView(page: ft.Page, auth_controller):
         page.update()
     
     def registrar_click(e):
-        if not nombre.value or not email.value or not password.value or not confirm_password.value:
+        nonlocal selected_image_path
+        if not nombre.value or not apellido.value or not email.value or not password.value or not confirm_password.value:
             mensaje.value = "Todos los campos son obligatorios"
             mensaje.color = "red"
             page.update()
@@ -80,11 +133,31 @@ def RegisterView(page: ft.Page, auth_controller):
             page.update()
             return
         
+        fotos_dir = "fotos_perfil"
+        if not os.path.exists(fotos_dir):
+            os.makedirs(fotos_dir)
+            print(f"Directorio creado: {fotos_dir}")
+        
+        foto_destino = None
+        if selected_image_path and os.path.exists(selected_image_path):
+            try:
+                extension = os.path.splitext(selected_image_path)[1]
+                nombre_foto = f"usuario_{datetime.now().strftime('%Y%m%d_%H%M%S')}{extension}"
+                foto_destino = os.path.join(fotos_dir, nombre_foto)
+                
+                shutil.copy2(selected_image_path, foto_destino)
+                print(f"Foto copiada a: {foto_destino}")
+                
+            except Exception as ex:
+                print(f"Error al copiar foto: {ex}")
+                mostrar_snackbar("Error al guardar la foto", ft.Colors.RED)
+        
         usuario_data = UsuarioSchema(
             nombre=nombre.value,
             apellido=apellido.value,
             email=email.value,
-            password=password.value
+            password=password.value,
+            foto_perfil=foto_destino  
         )
         
         exito, msg = auth_controller.registrar(usuario_data)
@@ -92,10 +165,13 @@ def RegisterView(page: ft.Page, auth_controller):
         if exito:
             mostrar_snackbar("¡Registro exitoso! Ahora inicia sesión", ft.Colors.GREEN)
             nombre.value = ""
+            apellido.value = ""
             email.value = ""
             password.value = ""
             confirm_password.value = ""
+            selected_image_path = None
             mensaje.value = ""
+            foto_perfil.content = ft.Icon(ft.Icons.PERSON, size=40)
             page.update()
             page.go("/")
         else:
@@ -138,6 +214,9 @@ def RegisterView(page: ft.Page, auth_controller):
                 [
                     ft.Text("Crear Nueva Cuenta", size=20, weight="bold"),
                     ft.Container(height=10),
+                    foto_perfil,
+                    btn_select_photo,
+                    ft.Container(height=5),
                     nombre,
                     apellido,
                     email,
