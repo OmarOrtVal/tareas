@@ -19,11 +19,11 @@ class AuthController:
                 "id_usuario": user_db_actualizado["id_usuario"],
                 "nombre": user_db_actualizado["nombre"],
                 "apellido": user_db_actualizado["apellido"],
+                "telefono": user_db_actualizado["telefono"],
                 "email": user_db_actualizado["email"],
                 "fecha_registro": user_db_actualizado["fecha_registro"],
-                "ultimo_acceso": user_db_actualizado["ultimo_acceso"],
-                "foto_perfil": user_db_actualizado.get("foto_perfil")  
-            }
+                "ultimo_acceso": user_db_actualizado["ultimo_acceso"],  
+        }
 
             return user, "Login exitoso"
         
@@ -43,9 +43,3 @@ class AuthController:
                 
         except Exception as e:
             return False, f"Error en registro: {str(e)}"
-    
-    def actualizar_foto_perfil(self, id_usuario, foto_data):
-        try:
-            return self.usuario_model.actualizar_foto_perfil(id_usuario, foto_data)
-        except Exception as e:
-            return False

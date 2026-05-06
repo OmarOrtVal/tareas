@@ -65,39 +65,59 @@ def DashboardView(page, tarea_controller):
             page.snack_bar.open = True
             page.update()
     
+    def formatear_fecha(fecha):
+        if not fecha:
+            return "No disponible"
+        if isinstance(fecha, datetime):
+            return fecha.strftime('%d/%m/%Y %H:%M:%S')
+        if isinstance(fecha, str):
+            if ' ' in fecha:
+                fecha_parte = fecha.split(' ')[0]
+                hora_parte = fecha.split(' ')[1]
+                año, mes, dia = fecha_parte.split('-')
+                return f"{dia}/{mes}/{año} {hora_parte}"
+            else:
+                año, mes, dia = fecha.split('-')
+                return f"{dia}/{mes}/{año}"
+        return str(fecha)
+    
     def cargar_tareas():
         if user and 'id_usuario' in user:
             lista_tareas.controls.clear()
             tareas = tarea_controller.obtener_lista(user['id_usuario'])
             
             for t in tareas:
-                fecha_limite_texto = t.get('fecha_limite', '')
-                fecha_texto = f"\nFecha límite: {formatear_fecha_limite(fecha_limite_texto)}" if fecha_limite_texto else ""
-                hora_limite_val = t.get('hora_limite', '') 
-                hora_texto = f" | Hora: {hora_limite_val}" if hora_limite_val else ""
+                fecha_creacion_texto = ""
+                if t.get('fecha_creacion'):
+                    fecha_creacion_texto = f"\nCreada: {formatear_fecha(t['fecha_creacion'])}"
                 
-                fecha_creacion = t.get('fecha_creacion_formateada', t.get('fecha_creacion', ''))
-                fecha_creacion_texto = f"\nCreada: {formatear_fecha_creacion(fecha_creacion)}" if fecha_creacion else ""
+                fecha_limite_texto = ""
+                if t.get('fecha_limite'):
+                    fecha_limite_texto = f"\nFecha límite: {formatear_fecha(t['fecha_limite'])}"
+                
+                hora_limite_texto = ""
+                if t.get('hora_limite'):
+                    hora_texto = str(t['hora_limite'])
+                    if len(hora_texto) > 5:
+                        hora_texto = hora_texto[:5]
+                    hora_limite_texto = f" - Hora: {hora_texto}"
                 
                 lista_tareas.controls.append(
                     ft.Card(
                         content=ft.Container(
                             content=ft.ListTile(
                                 title=ft.Text(t['titulo'], weight="bold"),
-                                subtitle=ft.Text(f"{t.get('descripcion', '')}\n"
-                                            f"Prioridad: {t.get('prioridad', 'media')}\n"
-                                            f"Categoría: {t.get('clasificacion', 'personal')}\n"
-                                            f"Estado: {t.get('estado', 'pendiente')}"
-                                            f"{fecha_texto}{hora_texto}{fecha_creacion_texto}"),
-                                trailing=ft.Row(
-                                    [
-                                        ft.IconButton(
-                                            icon=ft.Icons.DELETE,
-                                            icon_color="red",
-                                            on_click=lambda e, id_t=t['id_tarea']: eliminar_tarea(id_t)
-                                        )
-                                    ],
-                                    tight=True
+                                subtitle=ft.Text(
+                                    f"{t.get('descripcion', 'Sin descripción')}\n"
+                                    f"Prioridad: {t.get('prioridad', 'media')}\n"
+                                    f"Categoría: {t.get('clasificacion', 'personal')}\n"
+                                    f"Estado: {t.get('estado', 'pendiente')}"
+                                    f"{fecha_limite_texto}{hora_limite_texto}{fecha_creacion_texto}"
+                                ),
+                                trailing=ft.IconButton(
+                                    icon=ft.Icons.DELETE,
+                                    icon_color="red",
+                                    on_click=lambda e, id_t=t['id_tarea']: eliminar_tarea(id_t)
                                 )
                             ),
                             padding=10
@@ -128,9 +148,9 @@ def DashboardView(page, tarea_controller):
             ft.dropdown.Option("personal", "Personal"),
             ft.dropdown.Option("trabajo", "Trabajo"),
             ft.dropdown.Option("estudio", "Estudio"),
-            ft.dropdown.Option("hogar", "Hogar"),      
-            ft.dropdown.Option("salud", "Salud"),      
-            ft.dropdown.Option("otro", "Otro"),        
+            ft.dropdown.Option("hogar", "Hogar"),
+            ft.dropdown.Option("salud", "Salud"),
+            ft.dropdown.Option("otro", "Otro"),
         ]
     )
     
@@ -190,75 +210,21 @@ def DashboardView(page, tarea_controller):
                 page.snack_bar.open = True
                 page.update()
     
-    def formatear_fecha(fecha):    
-        if not fecha:
-            return "No disponible"
-        if isinstance(fecha, str) and ' ' in fecha:
-            fecha_parte = fecha.split(' ')[0]  
-            hora_parte = fecha.split(' ')[1]  
-            año, mes, dia = fecha_parte.split('-')
-            return f"{dia}/{mes}/{año} {hora_parte}"
-        return str(fecha)
-    
-    def formatear_fecha_limite(fecha):
-        if not fecha:
-            return "Sin fecha límite"
-        try:
-            if isinstance(fecha, str):
-                if ' ' in fecha:
-                    fecha_parte = fecha.split(' ')[0]
-                    hora_parte = fecha.split(' ')[1][:5]  
-                    año, mes, dia = fecha_parte.split('-')
-                    return f"{dia}/{mes}/{año} {hora_parte}"
-                else:
-                    año, mes, dia = fecha.split('-')
-                    return f"{dia}/{mes}/{año}"
-        except:
-            return str(fecha)
-        return str(fecha)
-    
-    def formatear_fecha_creacion(fecha):
-        if not fecha:
-            return "Fecha no disponible"
-        try:
-            if isinstance(fecha, str):
-                if ' ' in fecha:
-                    fecha_parte = fecha.split(' ')[0]
-                    hora_parte = fecha.split(' ')[1][:5]
-                    año, mes, dia = fecha_parte.split('-')
-                    return f"{dia}/{mes}/{año} {hora_parte}"
-                else:
-                    año, mes, dia = fecha.split('-')
-                    return f"{dia}/{mes}/{año}"
-        except:
-            return str(fecha)
-        return str(fecha)
-    
     def mostrar_perfil(e):
         if not user:
             return
-        
-        foto_widget = ft.CircleAvatar(
-            radius=50,
-            bgcolor=ft.Colors.BLUE_100
-        )
-        
-        if user.get('foto_perfil'):
-            foto_widget.foreground_image_src_base64 = user['foto_perfil']
-        else:
-            foto_widget.content = ft.Icon(ft.Icons.PERSON, size=50)
-        
+        telefono = user.get('telefono') or 'No registrado'
         dialogo = ft.AlertDialog(
             title=ft.Text("Perfil"),
             content=ft.Column([
-                foto_widget,
                 ft.Text(f"ID: {user.get('id_usuario', '')}"),
                 ft.Text(f"Nombre: {user.get('nombre', '')}"),
                 ft.Text(f"Apellido: {user.get('apellido', '')}"),
+                ft.Text(f"Teléfono: {user.get('telefono', '')}"),
                 ft.Text(f"Email: {user.get('email', '')}"),
                 ft.Text(f"Fecha de registro: {formatear_fecha(user.get('fecha_registro'))}"),  
                 ft.Text(f"Último acceso: {formatear_fecha(user.get('ultimo_acceso'))}"),
-            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER, tight=True, spacing=10)
+            ], tight=True)
         )
         page.overlay.append(dialogo)
         dialogo.open = True
