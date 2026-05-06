@@ -1,9 +1,60 @@
 import flet as ft
+from datetime import datetime
 
 def DashboardView(page, tarea_controller):
     user = getattr(page, "user_data", None)
     
     lista_tareas = ft.Column(scroll=ft.ScrollMode.ALWAYS, expand=True)
+    
+    fecha_limite = ft.DatePicker(
+        first_date=datetime(2000, 1, 1),
+        last_date=datetime(2030, 12, 31)
+    )
+    
+    hora_limite = ft.TimePicker()
+    
+    page.overlay.append(fecha_limite)
+    page.overlay.append(hora_limite)
+
+    def abrir_calendario(e):
+        fecha_limite.open = True
+        page.update()
+
+    def abrir_reloj(e):
+        hora_limite.open = True
+        page.update()
+    
+    btn_fecha = ft.ElevatedButton(
+        "Seleccionar Fecha",
+        icon=ft.Icons.CALENDAR_MONTH,
+        on_click=abrir_calendario
+    )
+    
+    btn_hora = ft.ElevatedButton(
+        "Seleccionar Hora",
+        icon=ft.Icons.ACCESS_TIME,
+        on_click=abrir_reloj
+    )
+    
+    txt_fecha_seleccionada = ft.Text("Fecha: No seleccionada")
+    txt_hora_seleccionada = ft.Text("Hora: No seleccionada")
+    
+    def actualizar_fecha(e):
+        if fecha_limite.value:
+            txt_fecha_seleccionada.value = f"Fecha: {fecha_limite.value.strftime('%d/%m/%Y')}"
+        else:
+            txt_fecha_seleccionada.value = "Fecha: No seleccionada"
+        page.update()
+    
+    def actualizar_hora(e):
+        if hora_limite.value:
+            txt_hora_seleccionada.value = f"Hora: {hora_limite.value.strftime('%H:%M')}"
+        else:
+            txt_hora_seleccionada.value = "Hora: No seleccionada"
+        page.update()
+    
+    fecha_limite.on_change = actualizar_fecha
+    hora_limite.on_change = actualizar_hora
     
     def eliminar_tarea(id_tarea):
         success, msg = tarea_controller.eliminar_tarea(id_tarea)
@@ -20,12 +71,17 @@ def DashboardView(page, tarea_controller):
             tareas = tarea_controller.obtener_lista(user['id_usuario'])
             
             for t in tareas:
+                fecha_limite_texto = t.get('fecha_limite', '')
+                fecha_texto = f"\nFecha límite: {formatear_fecha_limite(fecha_limite_texto)}" if fecha_limite_texto else ""
+                hora_limite_val = t.get('hora_limite', '') 
+                hora_texto = f" | Hora: {hora_limite_val}" if hora_limite_val else ""
+                
                 lista_tareas.controls.append(
                     ft.Card(
                         content=ft.Container(
                             content=ft.ListTile(
                                 title=ft.Text(t['titulo'], weight="bold"),
-                                subtitle=ft.Text(f"{t.get('descripcion', '')}\nPrioridad: {t.get('prioridad', 'media')}\nCategoría: {t.get('clasificacion', 'personal')}\nEstado: {t.get('estado', 'pendiente')}"),
+                                subtitle=ft.Text(f"{t.get('descripcion', '')}\nPrioridad: {t.get('prioridad', 'media')}\nCategoría: {t.get('clasificacion', 'personal')}\nEstado: {t.get('estado', 'pendiente')}{fecha_texto}{hora_texto}"),
                                 trailing=ft.Row(
                                     [
                                         ft.IconButton(
@@ -43,73 +99,117 @@ def DashboardView(page, tarea_controller):
                 )
             page.update()
     
-    txt_titulo = ft.TextField(label="Titulo", expand=True)
-    txt_descripcion = ft.TextField(label="Descripcion", expand=True)
+    txt_titulo = ft.TextField(label="Título", expand=True)
+    txt_descripcion = ft.TextField(label="Descripción", expand=True, multiline=True, max_lines=3)
     
-    prioridad = ft.RadioGroup(
+    prioridad_dropdown = ft.Dropdown(
+        label="Prioridad",
         value="media",
-        content=ft.Row([
-            ft.Radio(value="alta", label="Alta"),
-            ft.Radio(value="media", label="Media"),
-            ft.Radio(value="baja", label="Baja"),
-        ])
+        width=150,
+        options=[
+            ft.dropdown.Option("alta", "Alta"),
+            ft.dropdown.Option("media", "Media"),
+            ft.dropdown.Option("baja", "Baja"),
+        ]
     )
     
-    clasificacion = ft.RadioGroup(
+    clasificacion_dropdown = ft.Dropdown(
+        label="Clasificación",
         value="personal",
-        content=ft.Row([
-            ft.Radio(value="personal", label="Personal"),
-            ft.Radio(value="trabajo", label="Trabajo"),
-            ft.Radio(value="estudio", label="Estudio"),
-        ])
+        width=150,
+        options=[
+            ft.dropdown.Option("personal", "Personal"),
+            ft.dropdown.Option("trabajo", "Trabajo"),
+            ft.dropdown.Option("estudio", "Estudio"),
+        ]
     )
     
-    estado = ft.RadioGroup(
+    estado_dropdown = ft.Dropdown(
+        label="Estado",
         value="pendiente",
-        content=ft.Row([
-            ft.Radio(value="pendiente", label="Pendiente"),
-            ft.Radio(value="en_progreso", label="En Progreso"),
-            ft.Radio(value="completada", label="Completada"),
-            ft.Radio(value="cancelada", label="Cancelada"),
-        ])
+        width=150,
+        options=[
+            ft.dropdown.Option("pendiente", "Pendiente"),
+            ft.dropdown.Option("en_progreso", "En Progreso"),
+            ft.dropdown.Option("completada", "Completada"),
+            ft.dropdown.Option("cancelada", "Cancelada"),
+        ]
     )
     
     def agregar_tarea(e):
         if user and 'id_usuario' in user:
             if not txt_titulo.value:
+                page.snack_bar = ft.SnackBar(ft.Text("El título es obligatorio"), bgcolor="red")
+                page.snack_bar.open = True
+                page.update()
                 return
             
+            val_fecha = None
+            val_hora = None
+
+            if fecha_limite.value:
+                val_fecha = fecha_limite.value.strftime('%Y-%m-%d')
+            
+            if hora_limite.value:
+                val_hora = hora_limite.value.strftime('%H:%M:%S')
+
             success, msg = tarea_controller.guardar_nueva(
                 user['id_usuario'],
                 txt_titulo.value,
                 txt_descripcion.value,
-                prioridad.value,
-                clasificacion.value,
-                estado.value
+                prioridad_dropdown.value,
+                clasificacion_dropdown.value,
+                estado_dropdown.value,
+                val_fecha,  
+                val_hora   
             )
             
             if success:
                 txt_titulo.value = ""
                 txt_descripcion.value = ""
+                fecha_limite.value = None
+                hora_limite.value = None
+                txt_fecha_seleccionada.value = "Fecha: No seleccionada"
+                txt_hora_seleccionada.value = "Hora: No seleccionada"
                 cargar_tareas()
+                page.snack_bar = ft.SnackBar(ft.Text(msg, color="white"), bgcolor="green")
+                page.snack_bar.open = True
                 page.update()
-                
+            else:
+                page.snack_bar = ft.SnackBar(ft.Text(msg, color="white"), bgcolor="red")
+                page.snack_bar.open = True
+                page.update()
+    
     def formatear_fecha(fecha):    
         if not fecha:
             return "No disponible"
-    
         if isinstance(fecha, str) and ' ' in fecha:
             fecha_parte = fecha.split(' ')[0]  
             hora_parte = fecha.split(' ')[1]  
             año, mes, dia = fecha_parte.split('-')
             return f"{dia}/{mes}/{año} {hora_parte}"
+        return str(fecha)
     
+    def formatear_fecha_limite(fecha):
+        if not fecha:
+            return "Sin fecha límite"
+        try:
+            if isinstance(fecha, str):
+                if ' ' in fecha:
+                    fecha_parte = fecha.split(' ')[0]
+                    hora_parte = fecha.split(' ')[1][:5]  
+                    año, mes, dia = fecha_parte.split('-')
+                    return f"{dia}/{mes}/{año} {hora_parte}"
+                else:
+                    año, mes, dia = fecha.split('-')
+                    return f"{dia}/{mes}/{año}"
+        except:
+            return str(fecha)
         return str(fecha)
     
     def mostrar_perfil(e):
         if not user:
             return
-        
         dialogo = ft.AlertDialog(
             title=ft.Text("Perfil"),
             content=ft.Column([
@@ -142,10 +242,18 @@ def DashboardView(page, tarea_controller):
                     ft.Text("Nueva Tarea", size=18, weight="bold"),
                     ft.Row([txt_titulo, txt_descripcion]),
                     ft.Row([
-                        ft.Column([ft.Text("Prioridad"), prioridad], spacing=5),
-                        ft.Column([ft.Text("Clasificacion"), clasificacion], spacing=5),
-                        ft.Column([ft.Text("Estado"), estado], spacing=5),
-                    ], spacing=30, vertical_alignment=ft.CrossAxisAlignment.START),
+                        prioridad_dropdown,
+                        clasificacion_dropdown,
+                        estado_dropdown,
+                    ], spacing=20, wrap=True),
+                    ft.Row([
+                        btn_fecha,
+                        btn_hora,
+                    ], spacing=20, wrap=True),
+                    ft.Row([
+                        txt_fecha_seleccionada,
+                        txt_hora_seleccionada,
+                    ], spacing=20, wrap=True),
                     ft.ElevatedButton("Guardar", on_click=agregar_tarea),
                     ft.Divider(),
                     ft.Text("Mis Tareas", size=18, weight="bold"),

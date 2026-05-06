@@ -13,12 +13,12 @@ class TareaModel:
         conn.close()
         return resultado
     
-    def crear(self, id_usuario, titulo, descripcion, prioridad, clasificacion, estado):
+    def crear(self, id_usuario, titulo, descripcion, prioridad, clasificacion, estado, fecha_limite=None, hora_limite=None):
         conn = self.db.get_connection()
         cursor = conn.cursor()
-        query = """INSERT INTO tareas(id_usuario, titulo, descripcion, prioridad, clasificacion, estado)
-                VALUES(%s, %s, %s, %s, %s, %s)"""
-        cursor.execute(query, (id_usuario, titulo, descripcion, prioridad, clasificacion, estado))
+        query = """INSERT INTO tareas(id_usuario, titulo, descripcion, prioridad, clasificacion, estado, fecha_limite, hora_limite)
+                VALUES(%s, %s, %s, %s, %s, %s, %s, %s)"""
+        cursor.execute(query, (id_usuario, titulo, descripcion, prioridad, clasificacion, estado, fecha_limite, hora_limite))
         conn.commit()
         conn.close()
     

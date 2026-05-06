@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-04-2026 a las 15:28:15
--- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.0.28
+-- Tiempo de generación: 06-05-2026 a las 04:34:57
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -55,18 +55,15 @@ CREATE TABLE `usuarios` (
   `password` varchar(255) NOT NULL,
   `fecha_registro` datetime DEFAULT current_timestamp(),
   `ultimo_acceso` datetime DEFAULT NULL,
-  `activo` tinyint(1) DEFAULT 1,
-  `foto_perfil` varchar(255) DEFAULT NULL
+  `activo` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `usuarios`
 --
 
-INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `email`, `password`, `fecha_registro`, `ultimo_acceso`, `activo`, `foto_perfil`) VALUES
-(3, 'Omar ', '', 'omar@correo.com', '$2b$12$U3JJAj0TfOKQExoDq6EnMePXhCEGlWtmbY.8/lJKX1u/I7tzneMSK', '2026-04-27 18:28:14', NULL, 1, NULL),
-(4, 'Administrador ', '', 'admin@correo.com', '$2b$12$cqonXluuRXO6/cR3oxGF8.nufBj6ObfjZQY9a6/KFC0lpxdZDJHt6', '2026-04-28 07:03:54', NULL, 1, NULL),
-(5, 'Administrador', 'secundario', 'admin2@correo.com', '$2b$12$BGQHpgEUXypHk/k4ZQ6X2ulb1KA9hi//9KfPTRzST5vaOzdM4Witq', '2026-04-28 07:27:39', NULL, 1, NULL);
+INSERT INTO `usuarios` (`id_usuario`, `nombre`, `apellido`, `email`, `password`, `fecha_registro`, `ultimo_acceso`, `activo`) VALUES
+(6, 'Omar', 'Ortega', 'omar@correo.com', '$2b$12$knVPWHCJf2g9.47rLNFrgef2vKPyvCU3f9sJUvFZkoFcmumTTIyUe', '2026-05-05 17:58:51', '2026-05-05 19:32:24', 1);
 
 --
 -- Índices para tablas volcadas
@@ -94,13 +91,13 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de la tabla `tareas`
 --
 ALTER TABLE `tareas`
-  MODIFY `id_tarea` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tarea` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Restricciones para tablas volcadas
