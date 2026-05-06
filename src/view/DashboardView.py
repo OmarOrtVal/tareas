@@ -94,9 +94,7 @@ def DashboardView(page, tarea_controller):
                 cargar_tareas()
                 page.update()
                 
-    def formatear_fecha(fecha):
-        print(f"DEBUG - Fecha recibida: {fecha}")  
-        print(f"DEBUG - Tipo: {type(fecha)}")      
+    def formatear_fecha(fecha):    
         if not fecha:
             return "No disponible"
     
